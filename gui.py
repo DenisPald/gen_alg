@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from main import genetic_algorithm, initialize_population  # Подключение вашего алгоритма из main.py
+from main import genetic_algorithm, initialize_population
 
 class GeneticAlgorithmGUI:
     def __init__(self, root):
@@ -60,6 +60,17 @@ class GeneticAlgorithmGUI:
         self.tree.heading("x1", text="x1")
         self.tree.heading("x2", text="x2")
         self.tree.pack(pady=10)
+        self.tree.bind("<Control-c>", self.copy_selection)
+
+    def copy_selection(self, event):
+        selected_items = self.tree.selection()
+        if selected_items:
+            clipboard_content = ""
+            for item in selected_items:
+                values = self.tree.item(item, "values")
+                clipboard_content += str(values[1]) + "\n"
+            self.root.clipboard_clear()
+            self.root.clipboard_append(clipboard_content)
 
     def run_algorithm(self):
         # Очистка таблицы
