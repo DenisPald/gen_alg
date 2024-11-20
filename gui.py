@@ -14,6 +14,12 @@ class GeneticAlgorithmGUI:
         frame = tk.Frame(root)
         frame.pack(pady=10)
 
+        tk.Label(root, text="Функция 8*x1^2 + 4*x1*x2 + 5*x1^2").pack(pady=10)
+
+        # Параметры алгоритма
+        frame = tk.Frame(root)
+        frame.pack(pady=10)
+
         # Размер популяции
         tk.Label(frame, text="Размер популяции:").grid(row=0, column=0, sticky="w")
         self.pop_size_var = tk.IntVar(value=100)
