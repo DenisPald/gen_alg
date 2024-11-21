@@ -35,20 +35,25 @@ class GeneticAlgorithmGUI:
         self.mutation_rate_var = tk.DoubleVar(value=10.0)
         tk.Entry(frame, textvariable=self.mutation_rate_var).grid(row=2, column=1)
 
+        # Размер селекции
+        tk.Label(frame, text="Размер селекции").grid(row=3, column=0, sticky="w")
+        self.selection_size = tk.IntVar(value=10)
+        tk.Entry(frame, textvariable=self.selection_size).grid(row=3, column=1)
+
         # Минимальное значение гена
-        tk.Label(frame, text="Минимальное значение гена:").grid(row=3, column=0, sticky="w")
+        tk.Label(frame, text="Минимальное значение гена:").grid(row=4, column=0, sticky="w")
         self.min_gene_var = tk.DoubleVar(value=-10.0)
-        tk.Entry(frame, textvariable=self.min_gene_var).grid(row=3, column=1)
+        tk.Entry(frame, textvariable=self.min_gene_var).grid(row=4, column=1)
 
         # Максимальное значение гена
-        tk.Label(frame, text="Максимальное значение гена:").grid(row=4, column=0, sticky="w")
+        tk.Label(frame, text="Максимальное значение гена:").grid(row=5, column=0, sticky="w")
         self.max_gene_var = tk.DoubleVar(value=10.0)
-        tk.Entry(frame, textvariable=self.max_gene_var).grid(row=4, column=1)
+        tk.Entry(frame, textvariable=self.max_gene_var).grid(row=5, column=1)
 
         # Метод селекции
-        tk.Label(frame, text="Метод отбора родителей:").grid(row=5, column=0, sticky="w")
+        tk.Label(frame, text="Метод отбора родителей:").grid(row=6, column=0, sticky="w")
         self.selection_method_var = tk.StringVar(value="Панмиксия")
-        tk.OptionMenu(frame, self.selection_method_var, "Панмиксия", "Ранговый отбор").grid(row=5, column=1)
+        tk.OptionMenu(frame, self.selection_method_var, "Панмиксия", "Ранговый отбор").grid(row=6, column=1)
 
         # Кнопка запуска
         tk.Button(root, text="Запустить алгоритм", command=self.run_algorithm).pack(pady=10)
@@ -80,6 +85,7 @@ class GeneticAlgorithmGUI:
         pop_size = self.pop_size_var.get()
         generations = self.generations_var.get()
         mutation_rate = self.mutation_rate_var.get() / 100
+        selection_size = self.selection_size.get()
         min_gene = self.min_gene_var.get()
         max_gene = self.max_gene_var.get()
         selection_method = self.selection_method_var.get()
@@ -89,7 +95,7 @@ class GeneticAlgorithmGUI:
         
         for generation in range(generations):
             best_value, best_chromosome, population = genetic_algorithm(
-                population, mutation_rate, selection_method
+                population, mutation_rate, selection_method, selection_size
             )
             # Добавление результатов в таблицу
             self.tree.insert("", "end", values=(generation + 1, best_value, best_chromosome[0], best_chromosome[1]))

@@ -8,17 +8,20 @@ def objective_function(x):
 def initialize_population(size, min_gene, max_gene):
     return np.random.uniform(min_gene, max_gene, (size, 2))
 
-# Турнирная селекция
-def selection(population, selection_size, tournament_size=3):
-    selected = []
-    for _ in range(selection_size):
-        # Случайно выбираем несколько индивидов для турнира
-        tournament_indices = np.random.choice(len(population), size=tournament_size, replace=False)
-        tournament = population[tournament_indices]
-        # Выбираем лучшего из турнира (по минимальному значению функции)
-        winner = tournament[np.argmin([objective_function(ind) for ind in tournament])]
-        selected.append(winner)
-    return np.array(selected)
+# Селекция методом Пропорционального отбора
+def selection(population, selection_size):
+    # Вычисляем приспособленность каждого индивида
+    fitness_values = np.array([1/objective_function(ind) for ind in population])
+
+    # Преобразуем приспособленность в вероятности (нормализуем)
+    fitness_sum = np.sum(fitness_values)
+    probabilities = fitness_values / fitness_sum
+
+    # Выбираем индивидов на основе вероятностей
+    selected_indices = np.random.choice(len(population), size=selection_size, p=probabilities)
+    selected = population[selected_indices]
+
+    return selected
 
 # Выбор родителей методами панмиксии или рангового отбора
 def select_parents(population, probabilities, select_parents_type):
@@ -44,22 +47,21 @@ def crossover(parent1, parent2):
 
 # Вычисление рангов для рангового отбора
 def calculate_rank_probabilities(population):
-    fitness_scores = np.array([objective_function(ind) for ind in population])
+    fitness_scores = np.array([1/objective_function(ind) for ind in population])
     sorted_indices = np.argsort(fitness_scores)  # Сортировка по возрастанию значений функции (лучшие в начале)
     
     # Присвоение рангов: лучший индивид получает ранг len(population), худший — 1
     ranks = np.zeros_like(fitness_scores, dtype=float)
     for rank, idx in enumerate(sorted_indices, start=1):
-        ranks[idx] = rank
+        ranks[idx] = rank**2
     
     # Конвертация рангов в вероятности
     probabilities = ranks / np.sum(ranks)
     return probabilities
 
 # Основная функция генетического алгоритма
-def genetic_algorithm(population, mutation_rate, select_parents_type):
+def genetic_algorithm(population, mutation_rate, select_parents_type, selection_size):
     # Селекция
-    selection_size = len(population) // 2
     new_population = selection(population, selection_size)
 
     probabilities = calculate_rank_probabilities(population)
